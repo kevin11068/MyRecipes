@@ -1,5 +1,5 @@
 class RecipesController < ApplicationController
-   before_action :set_recipe, only: [:edit, :update, :show, :like]
+   before_action :set_recipe, only: [:edit, :update, :show, :like, :review]
    before_action :require_user, except: [:show, :index, :like]
    before_action :require_user_like, only: [:like]
    before_action :require_same_user, only: [:edit, :update]
@@ -44,6 +44,22 @@ class RecipesController < ApplicationController
          render :edit
       end
    end
+   
+  def review
+    review = Review.create(comment: params[:comment], chef: current_user, recipe: @recipe)
+    if review.valid?
+      flash[:success] = "Thank you for reviewing this recipe"
+    else
+      flash[:danger] = "Review failed to post"
+    end
+    redirect_to :back
+  end
+  
+  def deletereview
+    Review.find(params[:revid]).destroy
+    flash[:success] = "Review deleted"
+    redirect_to :back
+  end
    
    def like
       
